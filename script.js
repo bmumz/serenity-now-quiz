@@ -18,17 +18,23 @@ function showQuotes(allQuotes) {
       quote.author === 'George'
   );
 
-  const setRandom = Math.floor(Math.random() * filteredQuotes.length);
-  const randomQuote = filteredQuotes[setRandom].quote;
-  const character = filteredQuotes[setRandom].author;
+  getRandomQuote(filteredQuotes);
+}
+
+function getRandomQuote(quotes) {
+  const setRandom = Math.floor(Math.random() * quotes.length);
+  const randomQuote = quotes[setRandom].quote;
+  const quoteAuthor = quotes[setRandom].author;
 
   const quoteElement = document.getElementById('quote');
   quoteElement.innerHTML = `
     <h1 class="quote-text"><span class="highlight"><span>"</span>${randomQuote}<span>"</span></span></h1>
     `;
+
+  chooseCharacter(quoteAuthor);
 }
 
-function chooseCharacter() {
+function chooseCharacter(quoteAuthor) {
   const characters = [
     { name: 'Jerry', url: 'https://i.ibb.co/LdH70JT/jerryBtn.png' },
     { name: 'Elaine', url: 'https://i.ibb.co/VqPC3r2/elaine-Btn.png' },
@@ -39,6 +45,26 @@ function chooseCharacter() {
   characters.map((character) => {
     const characterElement = document.getElementById('characters');
     const buttonElement = document.createElement('button');
+    const chosenCharElement = document.getElementById('chosenCharacter');
+    const outcomeElement = document.getElementById('outcome');
+
+    let score = 0;
+    const activeScore = document.querySelector('.active-score');
+    activeScore.innerHTML = score + ' points';
+
+    buttonElement.onclick = function () {
+      if (quoteAuthor === character.name) {
+        correctAnswer(character.name);
+
+        outcomeElement.innerHTML = `Correct! `;
+        activeScore.innerHTML = score + 1;
+      } else if (quoteAuthor !== character.name) {
+        correctAnswer(character.name);
+        chosenCharElement.innerHTML = `${character.name} did not say this...`;
+
+        outcomeElement.innerHTML = `Incorrect!`;
+      }
+    };
 
     buttonElement.innerHTML = `<img src='${character.url}' alt='Select ${character.name}'>`;
 
@@ -46,7 +72,10 @@ function chooseCharacter() {
   });
 }
 
-chooseCharacter();
+function correctAnswer(character) {
+  const result = document.getElementById('chosenCharacter');
+  result.innerHTML = `${character}`;
+}
 
 // COUNTDOWN
 let countdown;
@@ -61,6 +90,7 @@ function timer(seconds) {
     const timeLeft = Math.round((then - Date.now()) / 1000);
     if (timeLeft < 0) {
       clearInterval(countdown);
+
       return;
     }
     displayRemainingTime(timeLeft);
@@ -75,5 +105,4 @@ function displayRemainingTime(seconds) {
   document.title = 'Serenity NOW! ' + display;
   displayTimer.textContent = display;
 }
-
 timer(10);
